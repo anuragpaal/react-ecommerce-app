@@ -43,6 +43,10 @@ function App() {
     );
   };
 
+  // Total
+
+  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
   return (
     <div style={{ padding: 20 }}>
       <h1>E-Commerce App</h1>
@@ -63,6 +67,7 @@ function App() {
       <hr />
 
       <h3>Cart</h3>
+      {cart.length === 0 && <p>Cart is empty</p>}
       {cart.map((item) => (
         <div key={item.id}>
           {item.name} - {item.price} * {item.qty}
@@ -70,6 +75,10 @@ function App() {
           <button onClick={() => decreaseQty(item.id)}>-</button>
         </div>
       ))}
+
+      <h2>Total : ₹{totalPrice}</h2>
+
+      <button disabled={cart.length === 0}>Checkout</button>
     </div>
   );
 }

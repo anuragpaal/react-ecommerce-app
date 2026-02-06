@@ -8,16 +8,7 @@ function App() {
     { id: 4, name: "Headphones", price: 1500 },
   ]);
 
-  // Load Cart from local storage
-  const [cart,setCart] = useState(() => {
-    const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  })
-
-  // save cart to local storage
-  useEffect(()=> {
-    localStorage.setItem("cart",JSON.stringify(cart))
-  })
+  const [search, setSearch] = useState("");
 
   // Add Cart
   const addToCart = (product) => {
@@ -33,6 +24,17 @@ function App() {
       setCart([...cart, { ...product, qty: 1 }]);
     }
   };
+
+  // Load Cart from local storage
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
+  // save cart to local storage
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   // Increase Qty
   const increaseQty = (id) => {
@@ -52,128 +54,107 @@ function App() {
     );
   };
 
-  // Total
+  // filter product
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(search.toLowerCase()),
+  );
 
+  // Remove item
+  const removeItem = (id) => {
+    setCart(cart.filter((item) => item.id !== id));
+  };
+
+  // Total
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   return (
-    // <div className="p-10 bg-gray-200 min-h-screen">
-    //   <h1>E-Commerce App</h1>
+    <div className="p-10 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-bold mb-5">E-Commerce App</h1>
 
-    //   <h2>Cart Items : {cart.length}</h2>
+      <h2 className="text-xl mb-5">Cart Items: {cart.length}</h2>
 
-    //   <h3>Products</h3>
+      <input
+        type="text"
+        placeholder="Search products..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="border p-2 mb-5 w-full rounded"
+      />
 
-    //   {products.map((product) => (
-    //     <div key={product.id}>
-    //       <h3>{product.name}</h3>
-    //       <p>{product.price}</p>
+      {/* PRODUCTS */}
+      <h3 className="text-2xl font-semibold mb-3">Products</h3>
 
-    //       <button onClick={() => addToCart(product)}>Add to Cart</button>
-    //     </div>
-    //   ))}
+      <div className="grid grid-cols-2 gap-5">
+        {filteredProducts.length === 0 && (
+          <p className="text-red-500">No Item Found</p>
+        )}
 
-    //   <hr />
+        {filteredProducts.map((product) => (
+          <div key={product.id} className="bg-white p-5 rounded shadow">
+            <h3 className="text-lg font-bold">{product.name}</h3>
 
-    //   <h3>Cart</h3>
-    //   {cart.length === 0 && <p>Cart is empty</p>}
-    //   {cart.map((item) => (
-    //     <div key={item.id}>
-    //       {item.name} - {item.price} * {item.qty}
-    //       <button onClick={() => increaseQty(item.id)}>+</button>
-    //       <button onClick={() => decreaseQty(item.id)}>-</button>
-    //     </div>
-    //   ))}
+            <p className="text-gray-600">₹{product.price}</p>
 
-    //   <h2>Total : ₹{totalPrice}</h2>
+            <button
+              onClick={() => addToCart(product)}
+              className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
+            >
+              Add to Cart
+            </button>
+          </div>
+        ))}
+      </div>
 
-    //   <button disabled={cart.length === 0}>Checkout</button>
-    // </div>
+      <hr className="my-6" />
 
+      {/* CART */}
+      <h3 className="text-2xl font-semibold mb-3">Cart</h3>
 
-  <div className="p-10 bg-gray-100 min-h-screen">
-    <h1 className="text-3xl font-bold mb-5">E-Commerce App</h1>
+      {cart.length === 0 && <p>Cart is empty</p>}
 
-    <h2 className="text-xl mb-5">
-      Cart Items: {cart.length}
-    </h2>
-
-    {/* PRODUCTS */}
-    <h3 className="text-2xl font-semibold mb-3">Products</h3>
-
-    <div className="grid grid-cols-2 gap-5">
-      {products.map((product) => (
+      {cart.map((item) => (
         <div
-          key={product.id}
-          className="bg-white p-5 rounded shadow"
+          key={item.id}
+          className="bg-white p-4 mb-3 rounded shadow flex justify-between"
         >
-          <h3 className="text-lg font-bold">
-            {product.name}
-          </h3>
+          <span>
+            {item.name} — ₹{item.price} × {item.qty}
+          </span>
 
-          <p className="text-gray-600">
-            ₹{product.price}
-          </p>
+          <div>
+            <button
+              onClick={() => increaseQty(item.id)}
+              className="bg-green-500 text-white px-2 rounded mr-2"
+            >
+              +
+            </button>
 
-          <button
-            onClick={() => addToCart(product)}
-            className="bg-blue-500 text-white px-4 py-2 mt-3 rounded"
-          >
-            Add to Cart
-          </button>
+            <button
+              onClick={() => decreaseQty(item.id)}
+              className="bg-red-500 text-white px-2 rounded"
+            >
+              -
+            </button>
+
+            <button
+              onClick={() => removeItem(item.id)}
+              className="bg-gray-700 text-white px-2 rounded ml-2"
+            >
+              x
+            </button>
+          </div>
         </div>
       ))}
-    </div>
 
-    <hr className="my-6" />
+      <h2 className="text-2xl font-bold mt-5">Total: ₹{totalPrice}</h2>
 
-    {/* CART */}
-    <h3 className="text-2xl font-semibold mb-3">Cart</h3>
-
-    {cart.length === 0 && <p>Cart is empty</p>}
-
-    {cart.map((item) => (
-      <div
-        key={item.id}
-        className="bg-white p-4 mb-3 rounded shadow flex justify-between"
+      <button
+        disabled={cart.length === 0}
+        className="bg-purple-600 text-white px-6 py-3 mt-4 rounded disabled:bg-gray-400"
       >
-        <span>
-          {item.name} — ₹{item.price} × {item.qty}
-        </span>
-
-        <div>
-          <button
-            onClick={() => increaseQty(item.id)}
-            className="bg-green-500 text-white px-2 rounded mr-2"
-          >
-            +
-          </button>
-
-          <button
-            onClick={() => decreaseQty(item.id)}
-            className="bg-red-500 text-white px-2 rounded"
-          >
-            -
-          </button>
-        </div>
-      </div>
-    ))}
-
-    <h2 className="text-2xl font-bold mt-5">
-      Total: ₹{totalPrice}
-    </h2>
-
-    <button
-      disabled={cart.length === 0}
-      className="bg-purple-600 text-white px-6 py-3 mt-4 rounded disabled:bg-gray-400"
-    >
-      Checkout
-    </button>
-  </div>
-
-
-
-    
+        Checkout
+      </button>
+    </div>
   );
 }
 

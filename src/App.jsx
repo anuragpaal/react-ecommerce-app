@@ -14,11 +14,17 @@ function App() {
     setCart([...cart,product]);
   }
 
+  const removeFromCart = (id) => {
+    setCart(cart.filter(item => item.id !== id))
+  }
+
   return (
     <div style={{ padding: 20 }}>
       <h1>E-Commerce App</h1>
 
       <h2>Cart Items : {cart.length}</h2>
+
+      <h3>Products</h3>
 
       {products.map((product) => (
         <div key={product.id}>
@@ -26,6 +32,18 @@ function App() {
           <p>{product.price}</p>
 
           <button onClick={() => addToCart(product)}>Add to Cart</button>
+        </div>
+      ))}
+
+      <hr />
+
+      <h3>Cart</h3>
+      {cart.map((item) => (
+        <div key={item.id}>
+          {item.name} - {item.price}
+          <button onClick={()=> removeFromCart(item.id)}>
+            Remove
+          </button>
         </div>
       ))}
     </div>

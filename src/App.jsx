@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [products] = useState([
@@ -8,7 +8,16 @@ function App() {
     { id: 4, name: "Headphones", price: 1500 },
   ]);
 
-  const [cart, setCart] = useState([]);
+  // Load Cart from local storage
+  const [cart,setCart] = useState(() => {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  })
+
+  // save cart to local storage
+  useEffect(()=> {
+    localStorage.setItem("cart",JSON.stringify(cart))
+  })
 
   // Add Cart
   const addToCart = (product) => {

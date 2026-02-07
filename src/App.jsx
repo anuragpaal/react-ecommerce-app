@@ -11,6 +11,7 @@ function App() {
   ]);
 
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Add Cart
   const addToCart = (product) => {
@@ -53,6 +54,16 @@ function App() {
   // Remove item
   const removeItem = (id) => {
     setCart(cart.filter((item) => item.id !== id));
+  };
+
+  // Checkout
+  const handleCheckout = () => {
+    setLoading(true);
+    setTimeout(() => {
+      alert("Order placed successfully!");
+      setCart([]);
+      setLoading(false);
+    }, 1500);
   };
 
   // Total
@@ -142,16 +153,16 @@ function App() {
       <h2 className="text-2xl font-bold mt-5">Total: ₹{totalPrice}</h2>
 
       <button
-        disabled={cart.length === 0}
-        onClick={() => alert("Order places Successfully")}
+        disabled={cart.length === 0 || loading}
+        onClick={handleCheckout}
         className="bg-purple-600 text-white px-6 py-3 mt-4 rounded disabled:bg-gray-400"
       >
-        Checkout
+        {loading ? "Processing..." : "Checkout"}
       </button>
 
       <button
         onClick={() => setCart([])}
-        className="bg-black text-white px-6 py-3 mt-4 ml-3 rounded"
+        className="bg-red-600 text-white px-5 py-2 mt-4 ml-3 rounded"
       >
         Clear Cart
       </button>

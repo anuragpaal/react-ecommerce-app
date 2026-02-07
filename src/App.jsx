@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
+import { CartContext } from "./context/CartContext";
 
 function App() {
+  const { cart, setCart } = useContext(CartContext);
   const [products] = useState([
     { id: 1, name: "Shoes", price: 2000 },
     { id: 2, name: "T-Shirt", price: 800 },
@@ -24,17 +26,6 @@ function App() {
       setCart([...cart, { ...product, qty: 1 }]);
     }
   };
-
-  // Load Cart from local storage
-  const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem("cart");
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
-
-  // save cart to local storage
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
 
   // Increase Qty
   const increaseQty = (id) => {
@@ -69,7 +60,9 @@ function App() {
 
   return (
     <div className="p-10 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-5">E-Commerce App</h1>
+      <h1 className="text-3xl font-bold mb-5">
+        E-Commerce App 🛒 ({cart.length})
+      </h1>
 
       <h2 className="text-xl mb-5">Cart Items: {cart.length}</h2>
 
@@ -150,9 +143,17 @@ function App() {
 
       <button
         disabled={cart.length === 0}
+        onClick={() => alert("Order places Successfully")}
         className="bg-purple-600 text-white px-6 py-3 mt-4 rounded disabled:bg-gray-400"
       >
         Checkout
+      </button>
+
+      <button
+        onClick={() => setCart([])}
+        className="bg-black text-white px-6 py-3 mt-4 ml-3 rounded"
+      >
+        Clear Cart
       </button>
     </div>
   );
